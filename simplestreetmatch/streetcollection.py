@@ -108,14 +108,14 @@ class StreetCollection (object):
         if match_column_name:
             columns += [ match_column_name ]
 
-        print (columns)
-
         # create function that builds the resulting row from the 2 input ones
         build_out_row = lambda row1, row2 = None: self.build_out_row (row1, row2, match_column_name, match_column_fn)
 
         i = j = 0 # iterators for each table
 
-        writer = csv.DictWriter (f, columns, restval = unmatched_row_value, delimiter = self.delimiter, quotechar = self.quotechar) if f else None
+        writer = csv.DictWriter (f, columns, restval = unmatched_row_value, delimiter = self.delimiter, quotechar = self.quotechar, lineterminator='\n') if f else None
+
+        writer.writeheader ()
 
         while True:
 

@@ -37,7 +37,7 @@ def main (str_args, debug = False):
 
     parser.add_argument ('--debug', action = 'store_true')
     parser.add_argument ('--input', action = 'store', nargs = 2, required = True)
-    parser.add_argument ('--out', action = 'store', nargs = '?', default = sys.stdout, type = argparse.FileType ('r'))
+    parser.add_argument ('--out', action = 'store', nargs = '?', default = sys.stdout, type = argparse.FileType ('w'))
 
     args = parser.parse_args (str_args.split ()) if str_args else parser.parse_args ()
 
