@@ -5,9 +5,64 @@ from . import defaults
 
 class StreetCollection (object):
 
+    """
+        An instance of this class represents a csv file, loaded from a file object.
+
+        The join method allows merging two instances based on a shared column with name given by key_column_name (address from now on).
+        
+        The Join operation is actually an 'outer join' with the following highlights:
+        - The resulting record has the union of all columns from both instances.
+        - Two records are merged into an output one if their normalized key (more on this below) matches exactly. 
+          The instance executing the join takes precedence and does not have its values overwritten, in case there is an overlap of columns in both instances.
+        - Unmatched records are included, with a default value in the missing record columns.
+        - It is possible to add a new column with name and value according to join () arguments.
+        - The results of the join operation are written to an output file-object.
+
+        Each record of the file is represented by a tuple of (key, original row, extra_info) where key is a normalized adress used for record matching and extra_info is described below.
+
+        Normalization steps include:
+        - Converting to lowercase
+        - Extracting <building_name>, a string of non-decimal characters preceding a decimal number. 
+          For example: The Cornerhouse in "The Cornerhouse, 12 Trinity Square" or "Dolphin House" in address "Dolphin House, 1 North Street, Guildford"
+          The motivation for this was finding adresses in separate files, including and lacking the <building_name>
+        - Normalizing street number ranges: two decimal characters separated by whitespace and a separator as provided in defaults.RANGE_SEPARATORS
+        - Remove non-word characters (\W in python's re package).
+        - Turning any contiguous whitespace chars into a single space.
+        - Changing street and road words to st and rd respectively. A production-grade version would require receiving a list of mappings.
+
+        This transformations can be found in StreetCollection.process_row ()
+
+        extra_info is a dictionary with information elements extracted from the original address, relevant for making decisions when comparing two records. 
+
+        At the moment, the following is filled-in:
+
+        - building_name as described above. It is used when comparing two normalized keys (which lack building_name) such that: 
+          if there is a match of keys but building_name is present for both and does not match the two records are not considered to match. If one lacks building_name then a match is considered.
+        - range_min and range_max, applicable when a range of street numbers is detected. Not used at the moment. For example: "112-114 English Street Carlisle CA3 8ND"
+
+        With the rules above, and the test data provided (Exercise_data_poi_part_1.csv, Exercise_data_poi_part_2.csv), a mismatch is detected for the following two records in files 1 and 2 respectively:
+        "46-50 Oldham Street, Northern Quarter" and "46-50 oldham st"
+
+        A possible solution, which I have not implemented, would be: if the adresses do not match but one is contained in the other AND a number is included then consider them matched. 
+
+    """
+
     def __init__ (self, f, delimiter = ';', quotechar = '"', key_column_name = 'address'):
-      
-        self.data = []
+
+        """
+        Parameters
+        ----------
+        f : file-object
+           Input file object with csv data
+        delimiter : str, optional
+           CSV file delimiter
+        quotechar : int, optional
+            The number of legs the animal (default is 4)
+        key_column_name: str, optional
+            Name of column containing the key used for joining instances of this class
+        """
+
+        self.data = [] # tuples of (normalized address, original row, extra_info)
         self.key_column_name = key_column_name
         self.delimiter = delimiter
         self.quotechar = quotechar
