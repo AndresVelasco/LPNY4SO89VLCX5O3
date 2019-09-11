@@ -29,7 +29,7 @@ usage: __main__.py [-h] [--debug] --input INPUT INPUT [--out [OUT]]
 __main__.py: error: the following arguments are required: --input
 ```
 
-If output file is omitted, results are written to standard output.
+If the output file argument is omitted, results are written to standard output.
 
 For example:
 
@@ -46,18 +46,18 @@ id_store;address;variable1;category;variable2;ratio
 
 (A full printout of the results is provided in the latest section.)
 
-Normalization and record matching logic is delivered by class `simplestreetmatch.streetcollection.StreetCollection` which is described below. 
+Normalization and record matching logic is delivered by class `simplestreetmatch.streetcollection.StreetCollection` which is described further below. 
 
 ## Tests
 
-Automatic tests can be found in simplestreetmatch.test.test and are based on stored sets of sample input files and their expected output. For example, there is at the moment a _set number 1_:
+Automatic tests can be found in simplestreetmatch.test.test and are based on stored sets of sample input files and their expected output. For example, at the moment there is just a _set number 1_:
 
 ```
 andres@debian9:~/src/LPNY4SO89VLCX5O3/simplestreetmatch/test$ ls *csv*
 test11.csv  test12.csv  test1o.csv
 ```
 
-Adding more sets does not require changing python code.
+Adding more sets does not require changing python code for them to be tested.
 
 Tests can be run with:
 
@@ -74,7 +74,7 @@ OK
 
 # Solution Highlights (StreetCollection)
 
-The solution is based on exact address matching after normalization, although its possible that a production-grade solution would require a best-match approach between addresses rather than trying to achieve perfect control on normalization (more on this later).
+The solution is based on exact address matching after normalization, although a production-grade solution would probably require a best-match approach between addresses rather than trying to achieve perfect control on normalization which does not address misspelled and missing words for instance. A section below is dedicated to drating possible solutions.
 
 An instance of the StreetCollection class represents a csv file, which is loaded from a file object.
 
@@ -88,32 +88,36 @@ The Join operation is actually an _outer join_ with the following highlights:
 * It is possible to add a new column (ratio in our example) with name and value according to the `join ()` arguments.
 * The results of the join operation are written to an output file-object.
 
-Each record of the file is represented by a tuple of (key, original row, extra_info) where key is the normalized adress used for record matching and extra_info is described below.
+Each record of the file is represented by a tuple of `(key, original row, extra_info)` where key is the normalized adress used for record matching and extra_info is described below.
 
 Normalization steps include:
 * Converting to lowercase
 * Extracting _building_name_, a string that precedes an address. 
   
   For example: The Cornerhouse in "The Cornerhouse, 12 Trinity Square" or "Dolphin House" in address "Dolphin House, 1 North Street, Guildford"
-  The motivation for this was finding adresses in separate files, including and lacking the _building_name_.
+  The motivation for this was finding adresses in separate files, including and lacking the _building_name_. 
   
-  Technically, it has been implemented as: _a string of non-decimal characters preceding a decimal number_.
+  Technically, it has been implemented with regular expressions as: _a string of non-decimal characters preceding a decimal number_.
   
-* Normalizing street number ranges: two decimal characters separated by whitespace and a separator as provided in `defaults.RANGE_SEPARATORS`
+* Normalizing street number ranges: two decimal characters separated by optional whitespace and a separator in `defaults.RANGE_SEPARATORS`
        
-* Remove non-word characters (\W in python's re package).
+* Remove non-word characters (\W in python's re package). This filters out punctuation characters typically.
+
 * Turning any contiguous whitespace chars into a single space.
-* Changing street and road words to st and rd respectively. A production-grade version would require receiving a list of mappings.
+
+* Changing street and road words to st and rd respectively. A production-grade version would require a list of mappings.
 
 This transformations can be found in `StreetCollection.process_row ()`
 
-`extra_info` is a dictionary with information elements extracted from the original address, relevant for making decisions when comparing two records. At the moment, the following are filled-in:
+`extra_info` in the tuple representation of a record (`(key, original row, extra_info)`) is a dictionary with information elements extracted from the original address, relevant for making decisions when comparing two records. At the moment, the following are filled-in:
 
 * building_name as described above. It is used when comparing two records (whose normalized address lacks building_name) such that: if there is a match of keys but building_name is present for both and does not match the two records are not considered to match. If one lacks building_name then a match is considered.
 
+For example: "1 north street, guildford" and "Dolphin House, 1 North Street, Guildford".
+
 * range_min and range_max, applicable when a range of street numbers is detected. Not used at the moment. For example: "112-114 English Street Carlisle CA3 8ND"
 
-#With the rules above, and the test data provided (Exercise_data_poi_part_1.csv, Exercise_data_poi_part_2.csv), a mismatch is detected for the following two records in files 1 and 2 respectively#:
+*With the rules above, and the test data provided (Exercise_data_poi_part_1.csv, Exercise_data_poi_part_2.csv), a mismatch is detected for the following two records in files 1 and 2 respectively*:
 ```
         "46-50 Oldham Street, Northern Quarter" and "46-50 oldham st"
 ```
@@ -124,7 +128,7 @@ A full printout of the results is provided in the latest section.
 
 # Solution At-Scale
 
-There are of course improvements to the solution presented here based on more careful examination of possible address patterns, but it would not cover mispelled words, missing or arbitrary abbreviation in long addresses (such as _CASTLEGATE SHOPPING CENTRE HIGH STREET STOCKTON-ON-TEES – TS18 1AF_).
+There are of course improvements to the type of solution presented here based on more careful examination of possible address patterns, but it would not cover mispelled words, missing or arbitrary abbreviation in long addresses (such as _CASTLEGATE SHOPPING CENTRE HIGH STREET STOCKTON-ON-TEES – TS18 1AF_).
 
 A first pass can always use the exact-match approach so that there are fewer addresses left for a heavier best-match stage.
 
@@ -132,7 +136,7 @@ Among the algorithms and approaches I would explore are the following.
 
 ## Leverage on Google Maps API
 
-It should be possible to get geographical coordinates from most of the addresses using Google Maps API, and use it to directly match addresses or as additional criteria in other algorithms.
+It should be possible to get geographical coordinates for most of the addresses using Google Maps API, and use them to directly match addresses or as additional criteria in other algorithms.
 
 ## Levarage on existing text search tools (ElasticSearch, Solr).
 
@@ -140,11 +144,21 @@ Before implementing a custom best-match algorithm I would explore what existing 
 
 ## Custom Best-match Algorithm
 
-After a first-pass to detect exact matches, the question would be to get, for every address in a set, the best match in the other, in a way that covers misspelled and missing (non relevant) words.
+In short this consists in determining, for every address, the best match in the other set of addresses.
 
 I would consider two approaches:
 
-#. hola
+#. For each address, get the _closest_ according to one or more metrics (string distance algorithms).
+
+Because this can be computationally challenging, it can help that most addresses have a street number, so if we assume that a wrong street number cannot produce a valid match (100 instead of 10 will go undetected), then we only have to compare addresses with the same street number.
+
+This approach is resistant to misspelled words.
+
+#. Get the best-match address based on the count of common words shared by each pair of addresses, weighted by the relevance of each word: a shared word that occurs in many addresses has less relevance than a shared word that occurs in few. 
+
+This approach is especially resistant to missing words such as shopping centre. 
+
+### 
 
 
 # Full Result Printout
