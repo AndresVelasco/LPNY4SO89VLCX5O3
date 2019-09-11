@@ -74,7 +74,7 @@ OK
 
 # Solution Highlights (StreetCollection)
 
-The solution is based on exact address matching after normalization, although a production-grade solution would probably require a best-match approach between addresses rather than trying to achieve perfect control on normalization which does not address misspelled and missing words for instance. A section below is dedicated to drating possible solutions.
+The solution is based on exact address matching after normalization, although a production-grade solution would require a best-match approach rather than trying to achieve perfect control on normalization (which does not address misspelled and missing words, for instance). A section below is dedicated to drafting possible solutions.
 
 An instance of the StreetCollection class represents a csv file, which is loaded from a file object.
 
@@ -82,9 +82,9 @@ The join method allows merging two instances based on a shared column (`address`
         
 The Join operation is actually an _outer join_ with the following highlights:
 * The resulting record has the union of columns from both instances.
-* Two records from different instances are merged into a single output one if their normalized key (more on this below) matches exactly. 
-* The instance executing the join preserves its column values, in case there is an overlap of columns in both instances.
-* Unmatched records from any of the two sides are included, with a default value in the missing record's columns.
+* Two records from different instances are merged into a single output if their normalized key (more on this below) matches exactly. 
+  The instance executing the join preserves its column values, in case there is an overlap of columns in both instances.
+* Unmatched records at any side are included, with a default value in the missing record's columns.
 * It is possible to add a new column (ratio in our example) with name and value according to the `join ()` arguments.
 * The results of the join operation are written to an output file-object.
 
