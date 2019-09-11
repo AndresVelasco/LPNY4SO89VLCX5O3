@@ -122,21 +122,29 @@ A possible solution, which I have not implemented, would be: if the adresses do 
 
 A full printout of the results is provided in the latest section.
 
-# Evolution
+# Solution At-Scale
 
-There are of course improvements to this solution based on more careful examination of possible address patterns, but it would not cover mispelled words, missing or arbitrary abbreviation in long addresses (such as _CASTLEGATE SHOPPING CENTRE HIGH STREET STOCKTON-ON-TEES – TS18 1AF_).
+There are of course improvements to the solution presented here based on more careful examination of possible address patterns, but it would not cover mispelled words, missing or arbitrary abbreviation in long addresses (such as _CASTLEGATE SHOPPING CENTRE HIGH STREET STOCKTON-ON-TEES – TS18 1AF_).
+
+A first pass can always use the exact-match approach so that there are fewer addresses left for a heavier best-match stage.
 
 Among the algorithms and approaches I would explore are the following.
 
 ## Leverage on Google Maps API
 
-It should be possible to get geographical coordinates and _normalized addres_ from using Google Maps API and then compare the results or use as one more decision criteria.
+It should be possible to get geographical coordinates from most of the addresses using Google Maps API, and use it to directly match addresses or as additional criteria in other algorithms.
 
-## Levarage on existing text search tools
+## Levarage on existing text search tools (ElasticSearch, Solr).
 
-In an scenario in which there are 100000s or even millions of addresses, and that we have to compare many with many, it would be worth to explore what existing tools for text search (ElasticSearch, Solr) can offer.
+Before implementing a custom best-match algorithm I would explore what existing text-search tools can provide.
 
-## Best-match algorithm
+## Custom Best-match Algorithm
+
+After a first-pass to detect exact matches, the question would be to get, for every address in a set, the best match in the other, in a way that covers misspelled and missing (non relevant) words.
+
+I would consider two approaches:
+
+#. hola
 
 
 # Full Result Printout
