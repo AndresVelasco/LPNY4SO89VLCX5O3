@@ -118,9 +118,13 @@ This transformations can be found in `StreetCollection.process_row ()`
         "46-50 Oldham Street, Northern Quarter" and "46-50 oldham st"
 ```
 
-A possible solution, which I have not implemented, would be: if the adresses do not match but one is contained in the other AND a number is included then consider them matched. 
+A possible solution, which I have not implemented, would be: if the adresses do not match but one is contained in the other AND a number is included then consider them matched. THis would cover this case, but I feel that a production-grade version would require a best-match approach.
 
 A full printout of the results is provided in the latest section.
+
+# Evolution
+
+ffdñf
 
 # Full Result Printout
 
