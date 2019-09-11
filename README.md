@@ -124,11 +124,24 @@ A full printout of the results is provided in the latest section.
 
 # Evolution
 
-ffdñf
+There are of course improvements to this solution based on more careful examination of possible address patterns, but it would not cover mispelled words, missing or arbitrary abbreviation in long addresses (such as _CASTLEGATE SHOPPING CENTRE HIGH STREET STOCKTON-ON-TEES – TS18 1AF_).
+
+Among the algorithms and approaches I would explore are the following.
+
+## Leverage on Google Maps API
+
+It should be possible to get geographical coordinates and _normalized addres_ from using Google Maps API and then compare the results or use as one more decision criteria.
+
+## Levarage on existing text search tools
+
+In an scenario in which there are 100000s or even millions of addresses, and that we have to compare many with many, it would be worth to explore what existing tools for text search (ElasticSearch, Solr) can offer.
+
+## Best-match algorithm
+
 
 # Full Result Printout
 
-#IMPORTANT#: not that ratio is truncated to 2 decimals and that it takes the value '?' for unmatched records and 'inf' when the quotient is zero (behavior in function `__main__.ratio_from_var2_var1`).
+*IMPORTANT*: `ratio` is truncated to 2 decimals and it takes the value '?' for unmatched records and 'inf' when the divident is zero (function `__main__.ratio_from_var2_var1`).
 
 ```
 id_store;address;variable1;category;variable2;ratio
