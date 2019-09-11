@@ -1,4 +1,4 @@
-# The Test
+# Test Definition
 
 _You may find enclosed two CSV files, related to a listing of stores in one country._
  
@@ -48,7 +48,7 @@ id_store;address;variable1;category;variable2;ratio
 
 Normalization and record matching logic is delivered by class `simplestreetmatch.streetcollection.StreetCollection` which is described below. 
 
-## Testing
+## Tests
 
 Automatic tests can be found in simplestreetmatch.test.test and are based on stored sets of sample input files and their expected output. For example, there is at the moment a _set number 1_:
 
@@ -74,7 +74,7 @@ OK
 
 # Solution Highlights (StreetCollection)
 
-The solution is based on exact address matching after normaliztion, although its possible that a production-grade solution would require a best-match approach (more on this later).
+The solution is based on exact address matching after normalization, although its possible that a production-grade solution would require a best-match approach between addresses rather than trying to achieve perfect control on normalization (more on this later).
 
 An instance of the StreetCollection class represents a csv file, which is loaded from a file object.
 
