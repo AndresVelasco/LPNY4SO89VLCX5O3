@@ -148,13 +148,13 @@ In short this consists in determining, for every address, the best match in the 
 
 I would consider two approaches:
 
-#. For each address, get the _closest_ according to one or more metrics (string distance algorithms).
+1. For each address, get the _closest_ according to one or more metrics (string distance algorithms).
 
 Because this can be computationally challenging, it can help that most addresses have a street number, so if we assume that a wrong street number cannot produce a valid match (100 instead of 10 will go undetected), then we only have to compare addresses with the same street number.
 
 This approach is resistant to misspelled words.
 
-#. Get the best-match address based on the count of common words shared by each pair of addresses, weighted by the relevance of each word: a shared word that occurs in many addresses has less relevance than a shared word that occurs in few. 
+2. Get the best-match address based on the count of common words shared by each pair of addresses, weighted by the relevance of each word: a shared word that occurs in many addresses has less relevance than a shared word that occurs in few. 
 
 This approach is especially resistant to missing words such as shopping centre. 
 
